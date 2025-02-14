@@ -216,7 +216,7 @@ export default function MainLayout() {
                 display: "flex",
                 bgcolor: "white",
                 borderRadius: "10px",
-                marginBottom: "50px",
+                marginBottom: "15px",
               }}
             >
               <Link to="/Dashboard">

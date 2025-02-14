@@ -86,6 +86,26 @@ export default function Sidebar() {
         },
       ],
     },
+
+    {
+      name: "Template",
+      listofdata: [
+        {
+          name: "Add Template",
+          pate: "/Add_Template",
+          component: "Template",
+        },
+        {
+          name: "View Template",
+          pate: "/View_Template",
+          component: "Template",
+        },
+   
+      ],
+    },
+
+
+
   ];
 
   useEffect(() => {

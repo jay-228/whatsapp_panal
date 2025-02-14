@@ -20,6 +20,7 @@ function Dashboard() {
   const [DocLinkDT, setDocLinkDT] = useState(0);
   const [WhaOffcial, setWhaOffcial] = useState(0);
   const [WhaOffcialDT, setWhaOffcialDT] = useState(0);
+  const [isDataFetched, setIsDataFetched] = useState(false); // State to track if data has been fetched
 
   const fetchData = () => {
     const endpoints = [
@@ -34,16 +35,15 @@ function Dashboard() {
       { url: `${API_URL}/wha_offcialwa_view_All`, setData: setWhaOffcial },
       { url: `${API_URL}/wha_offcialwadt_view_All`, setData: setWhaOffcialDT },
     ];
+
     endpoints.forEach(({ url, setData }) => {
       axios
         .get(url)
         .then((res) => {
           setData(res.data.data.length);
-          toast.success(`Data fetched successfully! `)
         })
         .catch((error) => {
           console.error(`Error fetching ${url}`, error);
-          toast.error(`Failed to load ${url} data`);
         });
     });
   };
@@ -51,6 +51,37 @@ function Dashboard() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (
+      !isDataFetched &&
+      totalAdmin &&
+      totalLog &&
+      clientData &&
+      clientDTData &&
+      whaSlabOptions &&
+      slabDTData &&
+      DocLink &&
+      DocLinkDT &&
+      WhaOffcial &&
+      WhaOffcialDT
+    ) {
+      toast.success("Data fetched successfully!");
+      setIsDataFetched(true); // Set to true to ensure the toast is only shown once
+    }
+  }, [
+    totalAdmin,
+    totalLog,
+    clientData,
+    clientDTData,
+    whaSlabOptions,
+    slabDTData,
+    DocLink,
+    DocLinkDT,
+    WhaOffcial,
+    WhaOffcialDT,
+    isDataFetched,
+  ]);
 
   return (
     <div>
@@ -69,7 +100,7 @@ function Dashboard() {
               className="rounded-2 m-0 px-5 text-white"
               style={{ backgroundColor: "black" }}
             >
-              Add Admin
+              Dashboard
             </h3>
           </div>
         </div>
