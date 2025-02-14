@@ -100,12 +100,8 @@ export default function Sidebar() {
           pate: "/View_Template",
           component: "Template",
         },
-   
       ],
     },
-
-
-
   ];
 
   useEffect(() => {
@@ -239,8 +235,6 @@ export default function Sidebar() {
 
       {/* Logout Button */}
       <Box sx={{ padding: 2, textAlign: "center" }}>
-        {/* mt: 45    */}
-
         <Button
           variant="contained"
           sx={{

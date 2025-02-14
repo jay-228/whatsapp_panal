@@ -6,7 +6,7 @@ import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "https://whatsapp-backend-chth.onrender.com";
+const API_URL = "http://147.93.107.44:5000";
 
 const Login_Page = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);

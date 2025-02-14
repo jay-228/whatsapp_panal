@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Row, Col } from "react-bootstrap";
 import "./Dashboard.css"; // Import the custom CSS
 
-const API_URL = "https://whatsapp-backend-chth.onrender.com";
+const API_URL = "http://147.93.107.44:5000";
 
 function Dashboard() {
   const [totalLog, setTotalLog] = useState(0);
@@ -85,7 +85,7 @@ function Dashboard() {
 
   return (
     <div>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={2000} />
       <div
         className="addadmin_header"
         style={{
@@ -137,22 +137,22 @@ function Dashboard() {
               },
               { title: "Log Records", value: totalLog, route: "/log" },
               {
-                title: "Wha Official Records",
+                title: "WhatsApp Official Records",
                 value: WhaOffcial,
                 route: "/View_Wpofficeal",
               },
               {
-                title: "Wha Official DT Records",
+                title: "WhatsApp Official DT Records",
                 value: WhaOffcialDT,
                 route: "/View_Wpofficeal",
               },
               {
-                title: "Doc Link Records",
+                title: "Document Link Records",
                 value: DocLink,
                 route: "/View_WhaDocLink",
               },
               {
-                title: "Doc Link Details Records",
+                title: "Document Link DT Records",
                 value: DocLinkDT,
                 route: "/View_WhaDocLink",
               },
