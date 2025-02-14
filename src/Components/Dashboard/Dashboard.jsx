@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Row, Col } from "react-bootstrap";
-import "./Dashboard.css";  // Import the custom CSS
+import "./Dashboard.css"; // Import the custom CSS
 
 const API_URL = "https://whatsapp-backend-chth.onrender.com";
 
@@ -37,7 +37,10 @@ function Dashboard() {
     endpoints.forEach(({ url, setData }) => {
       axios
         .get(url)
-        .then((res) => setData(res.data.data.length))
+        .then((res) => {
+          setData(res.data.data.length);
+          toast.success(`Data fetched successfully! `)
+        })
         .catch((error) => {
           console.error(`Error fetching ${url}`, error);
           toast.error(`Failed to load ${url} data`);
@@ -50,32 +53,90 @@ function Dashboard() {
   }, []);
 
   return (
-    <div className="dashboard-container">
-      <div className="container mt-4">
-        <h1 className="text-center mb-4">Dashboard Overview</h1>
-        <Row className="g-4">
-          {[ 
-            { title: "Admin Records", value: totalAdmin, route: "/View_Admin" },
-            { title: "Client Records", value: clientData, route: "/View_Client" },
-            { title: "Client Details Records", value: clientDTData, route: "/ViewCleintDT" },
-            { title: "Slab Records", value: whaSlabOptions, route: "/View_Slab" },
-            { title: "Slab Details Records", value: slabDTData, route: "/View_Slab" },
-            { title: "Log Records", value: totalLog, route: "/log" },
-            { title: "Wha Official Records", value: WhaOffcial, route: "/View_Wpofficeal" },
-            { title: "Wha Official DT Records", value: WhaOffcialDT, route: "/View_Wpofficeal" },
-            { title: "Doc Link Records", value: DocLink, route: "/View_WhaDocLink" },
-            { title: "Doc Link Details Records", value: DocLinkDT, route: "/View_WhaDocLink" }
-          ].map((item, index) => (
-            <Col md={3} sm={6} key={index}>
-              <Link to={item.route} className="text-decoration-none">
-                <div className="card text-center p-3 card-clickable shadow-sm">
-                  <h5 className="card-title text-primary">{item.title}</h5>
-                  <h2 className="card-value display-4">{item.value}</h2>
-                </div>
-              </Link>
-            </Col>
-          ))}
-        </Row>
+    <div>
+      <ToastContainer position="top-right" autoClose={3000} />
+      <div
+        className="addadmin_header"
+        style={{
+          height: "80px",
+          backgroundColor: "#D6DCEC",
+          marginTop: "60px",
+        }}
+      >
+        <div style={{ backgroundColor: "rgba(97, 158, 208, 1)" }}>
+          <div className="d-flex justify-content-center py-4">
+            <h3
+              className="rounded-2 m-0 px-5 text-white"
+              style={{ backgroundColor: "black" }}
+            >
+              Add Admin
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      <div className="dashboard-container">
+        <div className="container mt-4">
+          <Row className="g-4 justify-content-center">
+            {[
+              {
+                title: "Admin Records",
+                value: totalAdmin,
+                route: "/View_Admin",
+              },
+              {
+                title: "Client Records",
+                value: clientData,
+                route: "/View_Client",
+              },
+              {
+                title: "Client Details Records",
+                value: clientDTData,
+                route: "/ViewCleintDT",
+              },
+              {
+                title: "Slab Records",
+                value: whaSlabOptions,
+                route: "/View_Slab",
+              },
+              {
+                title: "Slab Details Records",
+                value: slabDTData,
+                route: "/View_Slab",
+              },
+              { title: "Log Records", value: totalLog, route: "/log" },
+              {
+                title: "Wha Official Records",
+                value: WhaOffcial,
+                route: "/View_Wpofficeal",
+              },
+              {
+                title: "Wha Official DT Records",
+                value: WhaOffcialDT,
+                route: "/View_Wpofficeal",
+              },
+              {
+                title: "Doc Link Records",
+                value: DocLink,
+                route: "/View_WhaDocLink",
+              },
+              {
+                title: "Doc Link Details Records",
+                value: DocLinkDT,
+                route: "/View_WhaDocLink",
+              },
+            ].map((item, index) => (
+              <Col lg={3} md={4} sm={6} key={index}>
+                <Link to={item.route} className="text-decoration-none">
+                  <div className="card text-center p-3 card-clickable shadow-sm">
+                    <h5 className="card-title">{item.title}</h5>
+                    <h2 className="card-value">{item.value}</h2>
+                  </div>
+                </Link>
+              </Col>
+            ))}
+          </Row>
+        </div>
       </div>
     </div>
   );

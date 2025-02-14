@@ -27,24 +27,46 @@ const Login_Page = () => {
   // Handle form submission
   const handleSubmit = async (values) => {
     const { AdminName, Password } = values;
+
+    // Show loading toast
+    const loadingToast = toast.loading("Logging in...", {
+      position: "top-right",
+      autoClose: false, // Keeps the toast open until manually dismissed
+      closeOnClick: false,
+    });
+
     try {
       const response = await axios.post(`${API_URL}/admin_login`, {
         AdminName,
         Password,
       });
-      console.log(response.data.token);
-      localStorage.setItem("authToken", JSON.stringify(response.data.token));
+
+      // Update the loading toast to a success message
+      toast.update(loadingToast, {
+        render: "Login successful!",
+        type: "success",
+        autoClose: 2000,
+        closeOnClick: false,
+      });
+
+      // Show a new success toast with a message
       toast.success("Admin Login successfully!", {
         position: "top-right",
         autoClose: 2000,
         closeOnClick: false,
       });
+
+      // Store the token and navigate to the Dashboard
+      localStorage.setItem("authToken", JSON.stringify(response.data.token));
       navigate("/Dashboard");
       window.location.reload();
     } catch (error) {
       console.error(error);
-      toast.error("Login failed! Please try again.", {
-        position: "top-right",
+
+      // Update the loading toast to an error message
+      toast.update(loadingToast, {
+        render: "Login failed! Please try again.",
+        type: "error",
         autoClose: 2000,
         closeOnClick: false,
       });
