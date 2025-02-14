@@ -7,7 +7,6 @@ import CleintDT from "../Components/Cleint/CleintDT";
 import View_Cleint from "../Components/Cleint/View_Cleint";
 import View_CleintDT from "../Components/Cleint/View_CleintDT";
 import Log from "../Components/Log/Log";
-import Login_Page from "../Components/Login/Login_Page";
 import Add_Slab from "../Components/Slab/Add_Slab";
 import SlabDT from "../Components/Slab/SlabDT";
 import View_Slab from "../Components/Slab/View_Slab";
@@ -22,8 +21,12 @@ import DocumentLink_main from "../Components/WpDocumentLinkSetup/DocumentLink_ma
 import DocumentLinkDT from "../Components/WpDocumentLinkSetup/DocumentLinkDT";
 import View_DocumentLink_main from "../Components/WpDocumentLinkSetup/View_DocumentLink_main";
 import View_DocumentLinkDT from "../Components/WpDocumentLinkSetup/View_DocumentLinkDT";
-import MainLayout from "../Components/MainLayout";
+import { Route, Routes } from "react-router-dom";
 import Sidebar from "../Components/Sidebar";
+import Login_Page from "../Components/Login_Page.jsx/Login_Page";
+import Main_layout from "../Components/Main_layout";
+
+
 
 const Routing = () => {
   return (
@@ -61,8 +64,8 @@ const Routing = () => {
         <Route path="/View_DocumentLink_main" element={<View_DocumentLink_main />} />
         <Route path="/View_DocumentLinkDT" element={<View_DocumentLinkDT />} />
 
-        <Route path="/MainLayout" element={<MainLayout />} />
         <Route path="/Sidebar" element={<Sidebar />} />
+        <Route path="/Main_layout" element={< Main_layout />} />
 
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
