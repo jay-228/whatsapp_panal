@@ -1,0 +1,10 @@
+
+ /* add client styles */
+ .form-check-input {
+    border-color: #333; /* Dark border color */
+  }
+  
+  .form-check-input:focus {
+    border-color: #444; /* Darker border when focused */
+  }
+  

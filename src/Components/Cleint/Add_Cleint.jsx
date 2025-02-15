@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "./Cleint.css"
 
 const API_URL = "http://147.93.107.44:5000";
 
@@ -38,6 +39,7 @@ const Add_Client = () => {
       Password: "",
       UserName: "",
       Port: "",
+      Server: "",
     },
     validationSchema: Yup.object({
       WhaClientName: Yup.string().required("Client Name is required"),
@@ -49,6 +51,7 @@ const Add_Client = () => {
       Database: Yup.string().required("Database is required"),
       Port: Yup.string().required("Port is required"),
       StaticIP: Yup.string().required("Static IP is required"),
+      Server: Yup.string().required("Server is required"), // Validation for Server field
     }),
     onSubmit: (values) => {
       if (!values.Adminname) {
@@ -102,7 +105,7 @@ const Add_Client = () => {
           {/* Client Name, Admin Name */}
           <div className="row mb-3">
             <div className="col-md-6">
-              <label htmlFor="WhaClientName" className="custom-label">
+              <label htmlFor="WhaClientName" className="custom-label fw-bold">
                 Client Name
               </label>
               <input
@@ -119,11 +122,11 @@ const Add_Client = () => {
               ) : null}
             </div>
             <div className="col-md-6">
-              <label htmlFor="Adminname" className="custom-label">
+              <label htmlFor="Adminname" className="custom-label fw-bold">
                 Admin Name
               </label>
               <select
-                className="form-control"
+                className="form-select"
                 id="Adminname"
                 name="Adminname"
                 value={formik.values.Adminname}
@@ -146,7 +149,7 @@ const Add_Client = () => {
           {/* Whatsapp Count, Whatsapp Balance Count */}
           <div className="row mb-3">
             <div className="col-md-6">
-              <label htmlFor="WhaCount" className="custom-label">
+              <label htmlFor="WhaCount" className="custom-label fw-bold">
                 Whatsapp Count
               </label>
               <input
@@ -164,7 +167,7 @@ const Add_Client = () => {
               ) : null}
             </div>
             <div className="col-md-6">
-              <label htmlFor="WhaBalCount" className="custom-label">
+              <label htmlFor="WhaBalCount" className="custom-label fw-bold">
                 Whatsapp Balance Count
               </label>
               <input
@@ -195,7 +198,7 @@ const Add_Client = () => {
                   checked={formik.values.IsAdmin}
                   onChange={formik.handleChange}
                 />
-                <label className="form-check-label" htmlFor="IsAdmin">
+                <label className="form-check-label fw-bold" htmlFor="IsAdmin">
                   Is Admin
                 </label>
               </div>
@@ -210,7 +213,7 @@ const Add_Client = () => {
                   checked={formik.values.IsActive}
                   onChange={formik.handleChange}
                 />
-                <label className="form-check-label" htmlFor="IsActive">
+                <label className="form-check-label fw-bold" htmlFor="IsActive">
                   Is Active
                 </label>
               </div>
@@ -225,7 +228,7 @@ const Add_Client = () => {
                   checked={formik.values.IsOWNWhatsapp}
                   onChange={formik.handleChange}
                 />
-                <label className="form-check-label" htmlFor="IsOWNWhatsapp">
+                <label className="form-check-label fw-bold" htmlFor="IsOWNWhatsapp">
                   Own WhatsApp
                 </label>
               </div>
@@ -235,7 +238,7 @@ const Add_Client = () => {
           {/* Username, Password */}
           <div className="row mb-3">
             <div className="col-md-6">
-              <label htmlFor="UserName" className="custom-label">
+              <label htmlFor="UserName" className="custom-label fw-bold">
                 Username
               </label>
               <input
@@ -252,7 +255,7 @@ const Add_Client = () => {
               ) : null}
             </div>
             <div className="col-md-6">
-              <label htmlFor="Password" className="custom-label">
+              <label htmlFor="Password" className="custom-label fw-bold">
                 Password
               </label>
               <input
@@ -270,63 +273,82 @@ const Add_Client = () => {
             </div>
           </div>
 
-          {/* Database */}
-          <div className="form-group mb-3">
-            <label htmlFor="Database" className="custom-label">
-              Database
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="Database"
-              name="Database"
-              value={formik.values.Database}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.Database && formik.errors.Database ? (
-              <div className="text-danger">{formik.errors.Database}</div>
-            ) : null}
-          </div>
+          <div className="row mb-3">
+            {/* Database */}
+            <div className="col-md-6">
+              <label htmlFor="Database" className="custom-label fw-bold">
+                Database
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="Database"
+                name="Database"
+                value={formik.values.Database}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched.Database && formik.errors.Database ? (
+                <div className="text-danger">{formik.errors.Database}</div>
+              ) : null}
+            </div>
 
-          {/* Port */}
-          <div className="form-group mb-3">
-            <label htmlFor="Port" className="custom-label">
-              Port
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="Port"
-              name="Port"
-              value={formik.values.Port}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.Port && formik.errors.Port ? (
-              <div className="text-danger">{formik.errors.Port}</div>
-            ) : null}
+            {/* Port */}
+            <div className="col-md-6">
+              <label htmlFor="Port" className="custom-label fw-bold">
+                Port
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="Port"
+                name="Port"
+                value={formik.values.Port}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched.Port && formik.errors.Port ? (
+                <div className="text-danger">{formik.errors.Port}</div>
+              ) : null}
+            </div>
           </div>
-
-          {/* Static IP */}
-          <div className="form-group mb-3">
-            <label htmlFor="StaticIP" className="custom-label">
-              Static IP
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="StaticIP"
-              name="StaticIP"
-              value={formik.values.StaticIP}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.StaticIP && formik.errors.StaticIP ? (
-              <div className="text-danger">{formik.errors.StaticIP}</div>
-            ) : null}
+          <div className="row mb-3">
+            {/* Static IP */}
+            <div className="col-md-6">
+              <label htmlFor="StaticIP" className="custom-label fw-bold">
+                Static IP
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="StaticIP"
+                name="StaticIP"
+                value={formik.values.StaticIP}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched.StaticIP && formik.errors.StaticIP ? (
+                <div className="text-danger">{formik.errors.StaticIP}</div>
+              ) : null}
+            </div>
+            <div className="col-md-6">
+              <label htmlFor="Server" className="custom-label fw-bold">
+                Server
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="Server"
+                name="Server"
+                value={formik.values.Server}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched.Server && formik.errors.Server ? (
+                <div className="text-danger">{formik.errors.Server}</div>
+              ) : null}
+            </div>
           </div>
-
           <button type="submit" className="btn btn-primary w-100 mt-3">
             Submit
           </button>

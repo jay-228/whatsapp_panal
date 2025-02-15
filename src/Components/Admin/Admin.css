@@ -6,3 +6,65 @@
     text-transform: uppercase;
   }
   
+
+
+
+  @media (max-width: 768px) {
+    .table {
+      font-size: 14px;
+    }
+    .btn {
+      font-size: 12px;
+      padding: 5px 10px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .table th, .table td {
+      font-size: 12px;
+    }
+    .title {
+      font-size: 18px;
+    }
+    .btn {
+      font-size: 10px;
+      padding: 4px 8px;
+    }
+  }
+  
+
+  /* Responsive Design for Mobile */
+@media (max-width: 768px) {
+  .responsive-container {
+    padding: 10px;
+  }
+
+  .addadmin_header {
+    height: 60px;
+    font-size: 16px;
+    margin-top: 40px;
+  }
+
+  .addadmin_header h3 {
+    font-size: 18px;
+    padding: 10px;
+  }
+
+  .form-control {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .btn {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .modal-dialog {
+    max-width: 90%;
+  }
+
+  .modal-body input {
+    font-size: 14px;
+  }
+}

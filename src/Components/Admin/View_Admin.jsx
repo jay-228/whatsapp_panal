@@ -4,27 +4,17 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Box,
-} from "@mui/material";
+import "./Admin.css"; // Import external CSS file for media queries
 
 const API_URL = "http://147.93.107.44:5000";
 
 const View_Admin = () => {
   const [adminData, setAdminData] = useState([]);
   const [editData, setEditData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
+  // Fetch admin data from the API
   const viewData = () => {
-    setLoading(true);
     axios
       .get(`${API_URL}/admin_view`)
       .then((res) => {
@@ -33,16 +23,15 @@ const View_Admin = () => {
       .catch((error) => {
         console.error("Error fetching data", error);
         toast.error("Failed to load admin data");
-      })
-      .finally(() => {
-        setLoading(false);
       });
   };
 
+  // Fetch data on component mount
   useEffect(() => {
     viewData();
   }, []);
 
+  // Delete an admin
   const deleteAdmin = (id) => {
     if (window.confirm("Are you sure you want to delete this Admin?")) {
       axios
@@ -57,10 +46,12 @@ const View_Admin = () => {
     }
   };
 
+  // Set the admin data to be edited
   const handleEdit = (admin) => {
     setEditData(admin);
   };
 
+  // Update admin data
   const handleUpdate = (e) => {
     e.preventDefault();
     axios
@@ -75,8 +66,14 @@ const View_Admin = () => {
       });
   };
 
+  // Filter admin data based on search term
+  const filteredAdminData = adminData.filter((admin) =>
+    admin.AdminName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
+      {/* Header Section */}
       <div
         className="addadmin_header"
         style={{
@@ -97,70 +94,71 @@ const View_Admin = () => {
         </div>
       </div>
 
-      <div className="container mt-5">
-        {/* Box for Responsiveness */}
-        <Box sx={{ overflowX: "auto" }}>
-          <TableContainer component={Paper}>
-            <Table aria-label="Admin Table">
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center">NO</TableCell>
-                  <TableCell align="center">Name</TableCell>
-                  <TableCell align="center">Phone Number</TableCell>
-                  <TableCell align="center">Password</TableCell>
-                  <TableCell align="center">Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center">
-                      Loading...
-                    </TableCell>
-                  </TableRow>
-                ) : adminData.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={5}
-                      align="center"
-                      style={{ color: "red" }}
-                    >
-                      No Data Found
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  adminData.map((item, index) => (
-                    <TableRow key={item._id}>
-                      <TableCell align="center">{index + 1}</TableCell>
-                      <TableCell align="center">{item.AdminName}</TableCell>
-                      <TableCell align="center">{item.PhoneNumber}</TableCell>
-                      <TableCell align="center">{item.Password}</TableCell>
-                      <TableCell align="center">
-                        <Button
-                          variant="contained"
-                          color="warning"
-                          onClick={() => handleEdit(item)}
-                          style={{ marginRight: "8px" }}
-                        >
-                          Update
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          onClick={() => deleteAdmin(item._id)}
-                        >
-                          Delete
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
+      {/* Main Content Section */}
+      <div className="container mt-4" style={{ maxWidth: "1000px" }}>
+        {/* Search Bar with Label in One Line */}
+        <div className="d-flex align-items-center mb-3">
+          <label htmlFor="searchAdmin" className="form-label me-2 mb-0 fw-bold">
+            Search Admin:
+          </label>
+          <input
+            type="text"
+            id="searchAdmin"
+            className="form-control"
+            placeholder="Search by Admin Name"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ width: "200px" }} // Set width to 200px
+          />
+        </div>
+
+        {/* Table Section */}
+        <div className="table-responsive">
+          <table className="table table-bordered table-hover">
+            <thead className="table-primary text-center">
+              <tr>
+                <th>NO</th>
+                <th>Name</th>
+                <th>Phone Number</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredAdminData.length > 0 ? (
+                filteredAdminData.map((item, index) => (
+                  <tr key={item._id} className="text-start align-middle">
+                    <td>{index + 1}</td>
+                    <td>{item.AdminName.toUpperCase()}</td>
+                    <td>{item.PhoneNumber}</td>
+                    <td className="d-flex justify-content-center flex-wrap gap-2">
+                      <button
+                        className="btn btn-warning"
+                        onClick={() => handleEdit(item)}
+                      >
+                        Update
+                      </button>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => deleteAdmin(item._id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="text-center">
+                    No data found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
+      {/* Edit Modal Section */}
       {editData && (
         <div
           className="modal fade show"
@@ -251,6 +249,7 @@ const View_Admin = () => {
         </div>
       )}
 
+      {/* Toast Container for Notifications */}
       <ToastContainer />
     </>
   );

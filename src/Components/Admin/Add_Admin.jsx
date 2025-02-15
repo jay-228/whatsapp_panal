@@ -77,7 +77,7 @@ const Add_Admin = () => {
         <form
           onSubmit={formik.handleSubmit}
           className=" p-4 shadow rounded" // Added shadow and rounded classes
-          style={{width: "400px" }} 
+          style={{width: "400px", background:"#F8F9FA"}} 
         >
           {formik.errors.general && (
             <div className="alert alert-danger mb-3">
