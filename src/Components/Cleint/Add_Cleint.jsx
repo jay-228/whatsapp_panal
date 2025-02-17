@@ -5,7 +5,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./Cleint.css"
+import "./Cleint.css";
 
 const API_URL = "http://147.93.107.44:5000";
 
@@ -228,7 +228,10 @@ const Add_Client = () => {
                   checked={formik.values.IsOWNWhatsapp}
                   onChange={formik.handleChange}
                 />
-                <label className="form-check-label fw-bold" htmlFor="IsOWNWhatsapp">
+                <label
+                  className="form-check-label fw-bold"
+                  htmlFor="IsOWNWhatsapp"
+                >
                   Own WhatsApp
                 </label>
               </div>

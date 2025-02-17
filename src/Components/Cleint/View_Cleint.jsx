@@ -27,12 +27,14 @@ const View_Client = () => {
     Password: "",
     UserName: "",
     Port: "",
-    AdminName: "",
+    AdminID: null, // Ensure AdminID is part of the state
     Server: "",
   });
 
   const navigate = useNavigate();
+  const [adminName, setAdminNames] = useState([]);
 
+  // Fetch client and admin data
   const fetchData = () => {
     axios
       .get(`${API_URL}/client_view_All`, {
@@ -43,13 +45,25 @@ const View_Client = () => {
       })
       .then((res) => {
         setClientData(res.data.data);
-        console.log("Client ", res.data.data);
+        console.log("Client Data:", res.data.data);
       })
       .catch((error) => {
-        toast.error("Error fetching data");
+        toast.error("Error fetching client data");
+      });
+
+    axios
+      .get(`${API_URL}/admin_view`)
+      .then((response) => {
+        console.log("Admin Data:", response.data);
+        setAdminNames(response.data.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching admin names:", error);
+        setAdminNames([]);
       });
   };
 
+  // Delete a client
   const deleteClient = (clientId) => {
     const isConfirmed = window.confirm(
       "Are you sure you want to delete this client?"
@@ -71,20 +85,31 @@ const View_Client = () => {
     }
   };
 
+  // Update a client
   const updateClient = () => {
+    const updatedClient = {
+      ...currentClient,
+      AdminID: currentClient.AdminID ? currentClient.AdminID._id : null, 
+    };
+  
     axios
-      .put(`${API_URL}/client_update/${currentClient._id}`, currentClient, {
+      .put(`${API_URL}/client_update/${currentClient._id}`, updatedClient, {
         headers: {
           Authorization: token,
         },
       })
       .then((res) => {
         console.log("Update response:", res.data);
+  
+        // Update the client list properly
         setClientData(
           ClientData.map((client) =>
-            client._id === currentClient._id ? currentClient : client
+            client._id === currentClient._id
+              ? { ...updatedClient, AdminID: currentClient.AdminID } // Ensure AdminID is fully updated
+              : client
           )
         );
+  
         setShowModal(false);
         toast.success("Client updated successfully");
       })
@@ -93,27 +118,46 @@ const View_Client = () => {
         toast.error("Error updating client");
       });
   };
-
+  
+  // Handle input changes in the form
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setCurrentClient((prevState) => ({
-      ...prevState,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+
+    if (name === "Adminname") {
+      // Find the selected admin object from the adminName array
+      const selectedAdmin = adminName.find((admin) => admin._id === value);
+
+      // Update the currentClient state with the selected admin's ID and name
+      setCurrentClient((prevState) => ({
+        ...prevState,
+        AdminID: selectedAdmin
+          ? { _id: selectedAdmin._id, AdminName: selectedAdmin.AdminName }
+          : null,
+        [name]: value,
+      }));
+    } else {
+      setCurrentClient((prevState) => ({
+        ...prevState,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+    }
   };
 
+  // Open the update modal and set the current client data
   const openUpdateModal = (client) => {
     setCurrentClient({
       ...client,
-      AdminName: client?.AdminID?.AdminName || "",
+      Adminname: client?.AdminID?._id || "", // Set the Adminname to the AdminID's _id
     });
     setShowModal(true);
   };
 
+  // Fetch data on component mount
   useEffect(() => {
     fetchData();
   }, [token]);
 
+  // Filter client data based on search term
   const filteredClientData = ClientData.filter((client) =>
     client.WhaClientName.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -141,13 +185,14 @@ const View_Client = () => {
         </div>
       </div>
 
+      {/* Buttons for toggling active clients and navigating */}
       <div className="d-flex justify-content-center mt-5">
         <button
           className="btn btn-primary"
           onClick={() => setShowActiveOnly(!showActiveOnly)}
           style={{ marginRight: "10px" }}
         >
-          {showActiveOnly ? "Client Data" : "Client Data"}
+          {showActiveOnly ? "Show All Clients" : "Show Active Clients"}
         </button>
         <button
           className="btn btn-secondary"
@@ -157,8 +202,8 @@ const View_Client = () => {
         </button>
       </div>
 
+      {/* Search Bar */}
       <div className="container-fluid my-4" style={{ overflowX: "auto" }}>
-        {/* Search Bar */}
         <div className="d-flex align-items-center mb-3">
           <label
             htmlFor="searchClient"
@@ -176,8 +221,10 @@ const View_Client = () => {
             style={{ width: "200px" }}
           />
         </div>
-        <div className="table-responsive ">
-          <table className="table table-bordered table-hover text-left w-100 ">
+
+        {/* Client Data Table */}
+        <div className="table-responsive">
+          <table className="table table-bordered table-hover text-left w-100">
             <thead className="table-primary text-center">
               <tr>
                 <th>NO</th>
@@ -197,44 +244,65 @@ const View_Client = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredClientData?.map((item, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{item?.WhaClientName?.toUpperCase()}</td>
-                  <td>{item?.AdminID?.AdminName?.toUpperCase()}</td>
-                  <td>{item?.WhaCount}</td>
-                  <td>{parseFloat(item?.WhaBalCount).toFixed(2)}</td>
-                  <td>{item?.IsAdmin.toString().toUpperCase()}</td>
-                  <td>{item?.IsActive.toString().toUpperCase()}</td>
-                  <td>{item?.StaticIP}</td>
-                  <td>{item?.IsOWNWhatsapp.toString().toUpperCase()}</td>
-                  <td>{item?.Database?.toUpperCase()}</td>
-                  <td>{item?.UserName?.toUpperCase()}</td>
-                  <td>{item?.Port}</td>
-                  <td>{item?.Server?.toUpperCase()}</td>
-                  <td>
-                    <div className="d-flex justify-content-center">
-                      <button
-                        className="btn btn-warning me-2"
-                        onClick={() => openUpdateModal(item)}
-                      >
-                        UPDATE
-                      </button>
-                      <button
-                        className="btn btn-danger"
-                        onClick={() => deleteClient(item._id)}
-                      >
-                        DELETE
-                      </button>
-                    </div>
+              {filteredClientData.length > 0 ? (
+                filteredClientData.map((item, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{item?.WhaClientName?.toUpperCase() || "N/A"}</td>
+                    <td>{item?.AdminID?.AdminName?.toUpperCase() || "N/A"}</td>
+                    <td>{item?.WhaCount ? parseFloat(item?.WhaBalCount).toFixed(2): "0.00"}</td>
+                    <td>{item?.WhaBalCount? parseFloat(item?.WhaBalCount).toFixed(2): "0.00"}</td>
+                    <td>
+                      {item?.IsAdmin !== undefined
+                        ? item.IsAdmin.toString().toUpperCase()
+                        : "N/A"}
+                    </td>
+                    <td>
+                      {item?.IsActive !== undefined
+                        ? item.IsActive.toString().toUpperCase()
+                        : "N/A"}
+                    </td>
+                    <td>{item?.StaticIP || "N/A"}</td>
+                    <td>
+                      {item?.IsOWNWhatsapp !== undefined
+                        ? item.IsOWNWhatsapp.toString().toUpperCase()
+                        : "N/A"}
+                    </td>
+                    <td>{item?.Database?.toUpperCase() || "N/A"}</td>
+                    <td>{item?.UserName?.toUpperCase() || "N/A"}</td>
+                    <td>{item?.Port || "N/A"}</td>
+                    <td>{item?.Server?.toUpperCase() || "N/A"}</td>
+                    <td>
+                      <div className="d-flex justify-content-center">
+                        <button
+                          className="btn btn-warning me-2"
+                          onClick={() => openUpdateModal(item)}
+                        >
+                          UPDATE
+                        </button>
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => deleteClient(item._id)}
+                        >
+                          DELETE
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="14" className="text-center text-danger fw-bold">
+                    No matching records found.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
+      {/* Update Client Modal */}
       {showModal && (
         <div
           className="modal fade show"
@@ -272,21 +340,44 @@ const View_Client = () => {
                     />
                   </div>
 
+
+
+
+
+
+
+
+
                   <div className="col-6 mb-3">
                     <label htmlFor="adminName" className="form-label">
                       ADMIN NAME
                     </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="adminName"
-                      name="AdminName"
-                      value={currentClient.AdminName}
+                    <select
+                      className="form-select"
+                      id="Adminname"
+                      name="Adminname"
+                      value={currentClient.Adminname}
                       onChange={handleInputChange}
-                      readOnly
-                    />
+                    >
+                      <option value="">Select Admin</option>
+                      {adminName.map((item) => (
+                        <option key={item._id} value={item._id}>
+                          {item.AdminName}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
+
+
+
+
+
+
+
+
+
+
 
                 <div className="row">
                   <div className="col-6 mb-3">
@@ -298,12 +389,11 @@ const View_Client = () => {
                       className="form-control"
                       id="whatsappCount"
                       name="WhaCount"
-                      value={currentClient.WhaCount}
+                      value={parseFloat(currentClient.WhaCount).toFixed(2)}
                       onChange={handleInputChange}
                       readOnly
                     />
                   </div>
-
                   <div className="col-6 mb-3">
                     <label
                       htmlFor="whatsappBalanceCount"
@@ -337,7 +427,6 @@ const View_Client = () => {
                       IS ADMIN
                     </label>
                   </div>
-
                   <div className="col-4 mb-3 form-check">
                     <input
                       type="checkbox"
@@ -351,7 +440,6 @@ const View_Client = () => {
                       IS ACTIVE
                     </label>
                   </div>
-
                   <div className="col-4 mb-3 form-check">
                     <input
                       type="checkbox"
@@ -361,10 +449,7 @@ const View_Client = () => {
                       checked={currentClient.IsOWNWhatsapp}
                       onChange={handleInputChange}
                     />
-                    <label
-                      className="form-check-label "
-                      htmlFor="isOwnWhatsapp"
-                    >
+                    <label className="form-check-label" htmlFor="isOwnWhatsapp">
                       IS OWN WHATSAPP
                     </label>
                   </div>
@@ -384,7 +469,6 @@ const View_Client = () => {
                       onChange={handleInputChange}
                     />
                   </div>
-
                   <div className="col-6 mb-3">
                     <label htmlFor="password" className="form-label">
                       PASSWORD
@@ -414,7 +498,6 @@ const View_Client = () => {
                       onChange={handleInputChange}
                     />
                   </div>
-
                   <div className="col-6 mb-3">
                     <label htmlFor="port" className="form-label">
                       PORT
@@ -429,34 +512,33 @@ const View_Client = () => {
                     />
                   </div>
                 </div>
+
                 <div className="row">
-                  <div className="row">
-                    <div className="col-6 mb-3">
-                      <label htmlFor="staticIP" className="form-label">
-                        STATIC IP
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="staticIP"
-                        name="StaticIP"
-                        value={currentClient.StaticIP}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div className="col-6 mb-3">
-                      <label htmlFor="Server" className="form-label">
-                        Server
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="Server"
-                        name="Server"
-                        value={currentClient.Server}
-                        onChange={handleInputChange}
-                      />
-                    </div>
+                  <div className="col-6 mb-3">
+                    <label htmlFor="staticIP" className="form-label">
+                      STATIC IP
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="staticIP"
+                      name="StaticIP"
+                      value={currentClient.StaticIP}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="col-6 mb-3">
+                    <label htmlFor="Server" className="form-label">
+                      SERVER
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="Server"
+                      name="Server"
+                      value={currentClient.Server}
+                      onChange={handleInputChange}
+                    />
                   </div>
                 </div>
               </div>

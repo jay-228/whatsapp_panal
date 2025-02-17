@@ -217,6 +217,13 @@ const ClientDT = () => {
                   />
                 </div>
 
+
+
+
+
+
+
+
                 <div className="mb-3">
                   <label htmlFor="whaSlabName" className="form-label fw-bold">
                     Slab Name
@@ -243,6 +250,13 @@ const ClientDT = () => {
                     className="text-danger"
                   />
                 </div>
+
+
+
+
+
+
+
 
                 <div className="mb-3">
                   <label className="form-label fw-bold">Count</label>

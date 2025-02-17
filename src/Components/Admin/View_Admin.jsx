@@ -148,8 +148,8 @@ const View_Admin = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="text-center">
-                    No data found
+                      <td colSpan="7" className="text-center text-danger fw-bold">
+                    No matching records found.
                   </td>
                 </tr>
               )}

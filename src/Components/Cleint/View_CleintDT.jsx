@@ -11,9 +11,10 @@ const ViewCleintDT = () => {
   const [selectedClient, setSelectedClient] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showActiveOnly, setShowActiveOnly] = useState(false);
+  const [whaSlabOptions, setWhaSlabOptions] = useState([]);
   const [formData, setFormData] = useState({
     WhaClientName: "",
-    WhaSlabName: "",
+    WhaSlabDtID: "", // Ensure this is part of the formData
     WhaCount: "",
     WhaBalCount: "",
     WhaDate: "",
@@ -37,11 +38,31 @@ const ViewCleintDT = () => {
         console.error("There was an error fetching the client data!", error);
         toast.error("Error fetching client data!");
       });
+
+    // Fetch slab data
+    axios
+      .get(`${API_URL}/slabdt_view`)
+      .then((res) => {
+        console.log("Fetched slabs:", res.data); // Log fetched slabs
+        if (Array.isArray(res.data)) {
+          setWhaSlabOptions(res.data);
+        } else if (Array.isArray(res.data.data)) {
+          setWhaSlabOptions(res.data.data);
+        } else {
+          toast.error("Error: Slabs data is not an array");
+        }
+      })
+      .catch(() => {
+        toast.error("Error fetching slabs!"); // Show error toast
+        console.error("Error fetching slabs"); // Log error
+      });
   }, []);
 
   // Filter client data based on search term
   const filteredClientData = clientData.filter((client) =>
-    client?.WhaClientID?.WhaClientName.toLowerCase().includes(searchTerm.toLowerCase())
+    client?.WhaClientID?.WhaClientName.toLowerCase().includes(
+      searchTerm.toLowerCase()
+    )
   );
 
   const handleDelete = (id) => {
@@ -66,7 +87,7 @@ const ViewCleintDT = () => {
     setSelectedClient(client);
     setFormData({
       WhaClientName: client?.WhaClientID?.WhaClientName || "",
-      WhaSlabName: client?.WhaSlabDtID?.WhaSlabID?.WhaSlabName || "",
+      WhaSlabDtID: client?.WhaSlabDtID?._id || "", // Set the saved slab ID
       WhaCount: client.WhaCount || "",
       WhaBalCount: client.WhaBalCount || "",
       WhaDate: client.WhaDate || "",
@@ -100,13 +121,12 @@ const ViewCleintDT = () => {
       .put(`${API_URL}/clientdt_update/${selectedClient._id}`, formData)
       .then((response) => {
         toast.success("Client data updated successfully!");
-        setClientData(
-          clientData.map((client) =>
-            client._id === selectedClient._id
-              ? { ...client, ...formData }
-              : client
-          )
-        );
+
+        // Fetch the updated client data to reflect changes instantly
+        axios.get(`${API_URL}/clientdt_view_All`).then((res) => {
+          setClientData(res.data.data); // Update the client list with fresh data
+        });
+
         setShowUpdateModal(false);
       })
       .catch((error) => {
@@ -140,7 +160,6 @@ const ViewCleintDT = () => {
 
       {/* Search Bar and Buttons */}
       <div className="d-flex justify-content-center mt-5 align-items-center">
-
         <button
           className="btn btn-secondary me-2"
           onClick={() => navigate("/View_Cleint")}
@@ -155,24 +174,26 @@ const ViewCleintDT = () => {
         </button>
       </div>
 
-      
-
       {/* Table Section */}
       <div className="container mt-4">
-
-      <div className="me-3">
-          <label htmlFor="searchClient" className="form-label me-2">
+        <div className="d-flex align-items-center mb-3">
+          <label
+            htmlFor="searchClient"
+            className="form-label me-2 mb-0 fw-bold"
+          >
             Search Client:
           </label>
           <input
             type="text"
             id="searchClient"
             className="form-control"
-            placeholder="Enter client name"
+            placeholder="Search by client name"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ width: "200px" }}
           />
         </div>
+
         <div className="table-responsive">
           <table className="table table-bordered table-hover">
             <thead className="table-primary text-center uppercase">
@@ -221,7 +242,7 @@ const ViewCleintDT = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="text-center">
+                  <td colSpan="7" className="text-center text-danger fw-bold">
                     No matching records found.
                   </td>
                 </tr>
@@ -274,24 +295,33 @@ const ViewCleintDT = () => {
                       name="WhaClientName"
                       value={formData.WhaClientName}
                       onChange={handleFormChange}
+                      readOnly
                     />
                   </div>
+
                   <div className="mb-3">
                     <label
-                      htmlFor="WhaSlabName"
+                      htmlFor="WhaSlabDtID"
                       className="form-label uppercase"
                     >
                       Slab Name
                     </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="WhaSlabName"
-                      name="WhaSlabName"
-                      value={formData.WhaSlabName}
+                    <select
+                      name="WhaSlabDtID"
+                      className="form-select"
+                      id="WhaSlabDtID"
                       onChange={handleFormChange}
-                    />
+                      value={formData.WhaSlabDtID}
+                    >
+                      <option value="">Select Slab Name</option>
+                      {whaSlabOptions?.map((item) => (
+                        <option key={item?._id} value={item?._id}>
+                          {item?.WhaSlabID?.WhaSlabName}
+                        </option>
+                      ))}
+                    </select>
                   </div>
+
                   <div className="mb-3">
                     <label htmlFor="WhaCount" className="form-label uppercase">
                       Count
